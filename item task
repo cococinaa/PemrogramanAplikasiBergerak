@@ -23,14 +23,6 @@
         android:textColor="#D32F2F"
         android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/btnEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Edit"
-        android:textColor="#1976D2"
-        android:textSize="14sp" />
 </LinearLayout>
 
 task adapter.kt
