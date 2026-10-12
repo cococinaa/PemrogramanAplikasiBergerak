@@ -1,85 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F4EBFB"
-    android:fillViewport="true">
+package com.example.uts_jacques
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
-        <ImageView
-            android:id="@+id/imgCatHeader"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="24dp"
-            android:contentDescription="Cat Header"
-            android:scaleType="fitCenter"
-            android:src="@drawable/cat_header" />
+class LoginActivity : AppCompatActivity() {
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Hey There,\nYou're back!"
-            android:textColor="#673AB7"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+    private lateinit var auth: FirebaseAuth
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var btnLogin: Button
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="email"
-            android:textColor="#212121"
-            android:textSize="14sp" />
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_rounded_input"
-            android:inputType="textEmailAddress"
-            android:paddingHorizontal="16dp"
-            android:textColor="#212121"
-            android:textSize="14sp" />
+        // Inisialisasi Firebase Auth
+        auth = FirebaseAuth.getInstance()
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Password"
-            android:textColor="#212121"
-            android:textSize="14sp" />
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        btnLogin = findViewById(R.id.btnLogin)
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_rounded_input"
-            android:inputType="textPassword"
-            android:paddingHorizontal="16dp"
-            android:textColor="#212121"
-            android:textSize="14sp" />
+        btnLogin.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
 
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/bg_rounded_button"
-            android:text="LOGIN"
-            android:textAllCaps="true"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="@null" />
+            if (email.isEmpty()) {
+                etEmail.error = "Email tidak boleh kosong"
+                etEmail.requestFocus()
+                return@setOnClickListener
+            }
 
-    </LinearLayout>
-</ScrollView>
+            if (password.isEmpty()) {
+                etPassword.error = "Password tidak boleh kosong"
+                etPassword.requestFocus()
+                return@setOnClickListener
+            }
+
+            // Autentikasi langsung menggunakan Firebase
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Login Berhasil!", Toast.LENGTH_SHORT).show()
+
+                        val username = if (email.contains("@")) email.split("@")[0] else email
+                        val intent = Intent(this, HomeActivity::class.java).apply {
+                            putExtra("USER_NAME", username)
+                        }
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Login Gagal: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+        }
+    }
+}
