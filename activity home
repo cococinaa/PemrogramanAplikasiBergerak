@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4EBFB"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#673AB7"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_cat_small" />
+
+        <TextView
+            android:id="@+id/tvHeaderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Hello, dess"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="What You Need To Do Today?"
+            android:textColor="#673AB7"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etTaskInput"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_rounded_input"
+                android:hint="What Task For Today"
+                android:paddingHorizontal="14dp"
+                android:textColorHint="#9E9E9E"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_rounded_button"
+                android:text="Add"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="@null" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/cat_card" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTasks"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Completed: 0 | Uncompleted: 0"
+            android:textColor="#212121"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+</LinearLayout>
+
+package com.example.uts_jacques
+
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
+class HomeActivity : AppCompatActivity() {
+
+    private lateinit var tvHeaderName: TextView
+    private lateinit var tvSummary: TextView
+    private lateinit var etTaskInput: EditText
+    private lateinit var btnAdd: Button
+    private lateinit var rvTasks: RecyclerView
+
+    private val taskList = mutableListOf<TaskModel>()
+    private lateinit var adapter: TaskAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_home)
+
+        tvHeaderName = findViewById(R.id.tvHeaderName)
+        tvSummary = findViewById(R.id.tvSummary)
+        etTaskInput = findViewById(R.id.etTaskInput)
+        btnAdd = findViewById(R.id.btnAdd)
+        rvTasks = findViewById(R.id.rvTasks)
+
+        val name = intent.getStringExtra("USER_NAME")
+        tvHeaderName.text = if (!name.isNullOrEmpty()) "Hello, $name" else "Hello, User"
+
+        adapter = TaskAdapter(
+            taskList = taskList,
+            onDeleteClick = { position ->
+                if (position in taskList.indices) {
+                    taskList.removeAt(position)
+                    adapter.notifyItemRemoved(position)
+                    adapter.notifyItemRangeChanged(position, taskList.size)
+                    updateSummary()
+                }
+            },
+            onStatusChange = {
+                updateSummary()
+            }
+        )
+
+        rvTasks.layoutManager = LinearLayoutManager(this)
+        rvTasks.adapter = adapter
+
+        btnAdd.setOnClickListener {
+            val taskText = etTaskInput.text.toString().trim()
+            if (taskText.isNotEmpty()) {
+                taskList.add(TaskModel(taskText))
+                adapter.notifyItemInserted(taskList.size - 1)
+                etTaskInput.setText("")
+                updateSummary()
+                Toast.makeText(this, "Tugas berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Isi tugas terlebih dahulu", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        updateSummary()
+    }
+
+    private fun updateSummary() {
+        val completed = taskList.count { it.isCompleted }
+        val uncompleted = taskList.size - completed
+        tvSummary.text = "Completed: $completed | Uncompleted: $uncompleted"
+    }
+}
