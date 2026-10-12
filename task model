@@ -1,0 +1,33 @@
+package com.example.uts_jacques
+
+data class TaskModel(
+    var title: String,
+    var isCompleted: Boolean = false
+)
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingVertical="8dp">
+
+    <CheckBox
+        android:id="@+id/cbTask"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="#212121"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Delete"
+        android:textColor="#D32F2F"
+        android:textSize="14sp" />
+
+</LinearLayout>
