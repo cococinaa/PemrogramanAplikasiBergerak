@@ -6,6 +6,7 @@
     android:background="#F4EBFB"
     android:orientation="vertical">
 
+    <!-- Top App Bar dengan Ikon Garis Tiga (Menu) di Kiri -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,9 +15,18 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
+        <!-- Ikon Garis Tiga (Menu) -->
+        <ImageView
+            android:id="@+id/btnMenu"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_menu" 
+            android:contentDescription="Menu" />
+
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:layout_marginStart="12dp"
             android:src="@drawable/ic_cat_small" />
 
         <TextView
@@ -30,6 +40,7 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Konten Utama di Bawah Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -44,6 +55,7 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <!-- Input Task & Button Add -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,20 +84,35 @@
                 app:backgroundTint="@null" />
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_marginTop="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/cat_card" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTasks"
+        <!-- Container Background Seperti Note di Bagian Tengah -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_rounded_input"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:elevation="2dp">
 
+            <!-- Gambar Maskot Kucing (Menyatu di dalam Note) -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/cat_card" />
+
+            <!-- List Tugas (RecyclerView) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTasks"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <!-- Status Summary di Bagian Bawah -->
         <TextView
             android:id="@+id/tvSummary"
             android:layout_width="wrap_content"
